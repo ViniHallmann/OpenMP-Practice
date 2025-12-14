@@ -45,8 +45,8 @@ int main(int argc, char *argv[])
     double start = omp_get_wtime();
 
     if (args->test_num == 1) histogram_critical(A, args->N, H, args->B);
-    //else if (test_num == 2) histogram_atomic(A, args->N, H, args->B);
-    //else if (test_num == 3) histogram_local(A, args->N, H, args->B);
+    else if (args->test_num == 2) histogram_atomic(A, args->N, H, args->B);
+    else if (args->test_num == 3) histogram_local(A, args->N, H, args->B);
     
     double end = omp_get_wtime();
     printf("Time: %f\n", end - start);
@@ -114,5 +114,40 @@ void histogram_critical(int *A, int N, int *H, int B)
         {
             H[val]++;
         }
+    }
+}
+
+void histogram_atomic(int *A, int N, int *H, int B)
+{
+    #pragma omp parallel for
+    for (int i = 0; i < N; i++) {
+        int val = A[i];
+
+        #pragma omp atomic    
+        H[val]++;
+        
+    }
+}
+
+void histogram_local(int *A, int N, int *H, int B)
+{
+    #pragma omp parallel 
+    {
+        int *H_local = (int*) calloc(B, sizeof(int));
+
+        #pragma omp for
+        for (int i = 0; i < N; i++) {
+            int val = A[i];
+            H_local[val];
+        }
+
+        #pragma omp critical
+        {
+            for (int j = 0; j < B; j++) {
+                H[j] += H_local[j];
+            }
+        }
+
+        free(H_local);
     }
 }
