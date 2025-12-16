@@ -6,7 +6,6 @@ make
 OUT_A="results_A.csv"
 OUT_B="results_B.csv"
 
-> $RESULTS_A
 
 #HEADERS DO CSV
 echo "variant,threads,N,K,chunk,time" > $OUT_A
