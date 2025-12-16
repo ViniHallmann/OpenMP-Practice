@@ -15,7 +15,6 @@ typedef struct{
 
 void print_help();
 s_args* get_args(int argc, char *argv[]);
-FILE* get_file(char* filename);
 void histogram_critical(int *A, int N, int *H, int B);
 void histogram_atomic(int *A, int N, int *H, int B);
 void histogram_local(int *A, int N, int *H, int B);
@@ -31,13 +30,14 @@ int main(int argc, char *argv[])
         for(int i = 0; i < args->N; i++) A[i] = rand() % args->B;
     else{
         FILE *fptr;
-        fptr = fopen("filename.txt", "r");
+        fptr = fopen(args->filename, "r");
 
         if (fptr == NULL) {
             fprintf(stderr,"Error: Could not open file. \n");
             exit(1);
         }     
         for (int i = 0; i < args->N; i++) fscanf(fptr, "%d", &A[i]);
+        fclose(fptr);
     }
     omp_set_num_threads(args->num_threads);
    
@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
 
     free(A);
     free(H);
+    free(args);
 
     return EXIT_SUCCESS;
 }
@@ -110,9 +111,6 @@ s_args* get_args(int argc, char *argv[]){
 
     return arguments;
 
-}
-FILE* get_file(char* filename){
-    
 }
 void histogram_critical(int *A, int N, int *H, int B)
 {
