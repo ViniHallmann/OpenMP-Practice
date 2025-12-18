@@ -96,7 +96,7 @@ def plot_taskA(df):
 
 if __name__ == "__main__":
     try:
-        df = pd.read_csv("results/results_A_RUN_3.csv")
+        df = pd.read_csv("results/results_5_RUNS/results_A_RUN_5.csv")
         df.columns = df.columns.str.strip()
         
         plot_taskA(df)
