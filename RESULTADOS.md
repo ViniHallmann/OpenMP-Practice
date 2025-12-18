@@ -45,4 +45,3 @@ Variando o chunk no escalonamento Dynamic ($N=1.000.000, K=28$).
 - **Chunk 64:** ~39.4s (Menor overhead)
 
 **Conclusão:** Observou-se uma anomalia de desempenho com chunk=16 no schedule Dynamic, que apresentou o pior tempo (~43.6s), superando até mesmo o overhead excessivo do chunk=1. O tamanho 16 causou uma distribuição desigual onde certas tarefas concentraram desproporcionalmente os cálculos pesados, anulando o benefício do balanceamento dinâmico
-
