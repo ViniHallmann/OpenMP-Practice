@@ -7,7 +7,7 @@
 typedef struct{
     int num_threads;
     int test_num;
-    int N;
+    long N;
     int B;
     int random;
     char* filename;
@@ -15,9 +15,9 @@ typedef struct{
 
 void print_help();
 s_args* get_args(int argc, char *argv[]);
-void histogram_critical(int *A, int N, int *H, int B);
-void histogram_atomic(int *A, int N, int *H, int B);
-void histogram_local(int *A, int N, int *H, int B);
+void histogram_critical(int *A, long N, int *H, int B);
+void histogram_atomic(int *A, long N, int *H, int B);
+void histogram_local(int *A, long N, int *H, int B);
 
 int main(int argc, char *argv[])
 {
@@ -103,7 +103,7 @@ s_args* get_args(int argc, char *argv[]){
         arguments->test_num = atoi(argv[3]);
         if (arguments->num_threads < 0 || arguments->test_num > 3) print_help();
         
-        arguments->N = atoi(argv[4]);
+        arguments->N = atol(argv[4]);
         arguments->B = atoi(argv[5]);
         
         //printf("%d %d %d %d\n", arguments->num_threads, arguments->test_num, arguments->N, arguments->B);
@@ -112,7 +112,7 @@ s_args* get_args(int argc, char *argv[]){
     return arguments;
 
 }
-void histogram_critical(int *A, int N, int *H, int B)
+void histogram_critical(int *A, long N, int *H, int B)
 {
     #pragma omp parallel for
     for (int i = 0; i < N; i++) {
@@ -125,7 +125,7 @@ void histogram_critical(int *A, int N, int *H, int B)
     }
 }
 
-void histogram_atomic(int *A, int N, int *H, int B)
+void histogram_atomic(int *A, long N, int *H, int B)
 {
     #pragma omp parallel for
     for (int i = 0; i < N; i++) {
@@ -137,7 +137,7 @@ void histogram_atomic(int *A, int N, int *H, int B)
     }
 }
 
-void histogram_local(int *A, int N, int *H, int B)
+void histogram_local(int *A, long N, int *H, int B)
 {
     #pragma omp parallel 
     {
