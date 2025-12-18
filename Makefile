@@ -5,14 +5,12 @@ all: $(BIN_FILES)
 $(BIN_DIR):
 	@mkdir -p $(BIN_DIR)
 
-taskA: taskA.c | $(BIN_DIR)
-#@gcc -fopenmp ./taskA.c  -lpthread -o ./bin/taskA
-	@gcc-15 -fopenmp ./taskA.c  -lpthread -o ./bin/taskA
+taskA: ./src/tasks/taskA.c | $(BIN_DIR)
+	@gcc -fopenmp ./src/tasks/taskA.c  -lpthread -o ./bin/taskA
 	@echo "Compiling taskA"
 
-taskB: taskB.c | $(BIN_DIR)
-#@gcc -fopenmp ./taskA.c  -lpthread -o ./bin/taskB
-	@gcc-15 -fopenmp ./taskB.c  -lpthread -o ./bin/taskB
+taskB: ./src/tasks/taskB.c | $(BIN_DIR)
+	@gcc -fopenmp ./src/tasks/taskB.c  -lpthread -o ./bin/taskB
 	@echo "Compiling taskB"
 
 clean:

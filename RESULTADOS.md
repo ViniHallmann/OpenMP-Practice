@@ -62,12 +62,14 @@ Variando o chunk no escalonamento Dynamic ($N=1.000.000, K=28$).
     Cada ponto nos gráficos representa a média de 5 execuções.
 
 ## Análise de Escalabilidade
-Avaliamos o impacto do aumento de threads para o cenário N=100.000,B=32.
+Avaliamos o impacto do aumento de threads para o cenário N=100.000,B=32,V1 (Critical).
 
 | Configuração | Tempo Médio (ms) | Speedup |
 |--------------|------------------|---------|
-| Sequencial (Local 1T) | ~0.45 ms | 1.0x |
-| 16 Threads | ~0.80 ms | 0.56x (Slowdown) |
+| Sequencial (Critical 1T) | ~1.2 ms | 1.0x |
+| 16 Threads | ~12 ms | 0.1x (Slowdown) |
+
+![Escalabilidade Histograma](plots/taskB/taskB_escalabilidade.png)
 
 **Conclusão:** Não houve speedup (aceleração); pelo contrário, houve degradação de desempenho. Isso ocorre devido à Granularidade Fina. O vetor de 100.000 inteiros é processado tão rapidamente pela CPU (frações de milissegundo) que o overhead (custo fixo) de criar, gerenciar e sincronizar as 16 threads é maior do que o tempo economizado dividindo o trabalho. O problema é pequeno demais para justificar o paralelismo.
 
@@ -77,16 +79,19 @@ Comparativo para N=100.000,B=32 com 16 Threads.
 
 | Variante | Tempo (ms) | Análise |
 |----------|------------|---------|
-| Critical | ~500 ms | Pior Desempenho. Serialização total. As threads passam mais tempo esperando na fila do bloqueio do que trabalhando. |
-| Atomic | ~2.5 ms | Desempenho razoável, mas prejudicado pelo B=32 (poucos buckets), causando alta disputa de cache (cache thrashing) no mesmo endereço de memória. |
-| Local | ~0.8 ms | Melhor Desempenho Relativo. Evita contenção, mas ainda sofre com o overhead de malloc/free repetido para cada thread num problema pequeno. |
+| Critical | ~12 ms | Pior Desempenho. Serialização total. As threads passam mais tempo esperando na fila do bloqueio do que trabalhando. |
+| Atomic | ~1.3 ms | Desempenho razoável, mas prejudicado pelo B=32 (poucos buckets), causando alta disputa de cache (cache thrashing) no mesmo endereço de memória. |
+| Local | ~0.7 ms | Melhor Desempenho Relativo. Evita contenção, mas ainda sofre com o overhead de malloc/free repetido para cada thread num problema pequeno. |
+
+![Comparação de Estratégias](plots/taskB/taskB_variantes.png)
 
 **Decisão:** A estratégia Local (V3) é arquiteturalmente superior pois elimina a condição de corrida durante o processamento pesado. A estratégia Critical (V1) provou-se inviável para computação de alto desempenho.
 
 ## Análise de "Overhead" e Tamanho do Problema
 
-Analisando a relação entre o tempo de cálculo real (Kernel) e o tempo total de execução.
-    - **Tempo de Kernel (Cálculo):** Diminui ligeiramente ou se mantém estável.
-    - **Tempo de Overhead (Setup):** Cresce linearmente com o número de threads.
+![Tempo Kernels](plots/taskB/taskB_tempo_kernels.png)
+
+Analisando a relação entre o tempo (Kernel) e a quantidade de threads.
+    - **Tempo de Kernel (Cálculo):** Aumenta ligeiramente ou se mantém estável conforme o número de threads é aumentado por execução.
 
 **Conclusão**: A Lei de Amdahl impõe um limite severo aqui. Para N=100.000, a parte sequencial do programa (alocação de memória, leitura de dados e criação de threads) domina o tempo total. O paralelismo só traria benefícios reais (Speedup > 1) se aumentássemos a carga de trabalho drasticamente (ex: N=100.000.000), onde o tempo de processamento superaria o custo de gerenciamento das threads.
