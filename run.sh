@@ -17,7 +17,7 @@ B_VALUES=(32 256 4096)
 T_VALUES=(1 2 4 8 16)
 C_VALUES=(1 4 16 64)
 V_VALUES=(1 2 3)
-RUNS=3
+RUNS=5
 
 echo "Running Task A..."
 for N in "${N_VALUES[@]}"; do
