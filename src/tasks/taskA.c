@@ -8,7 +8,6 @@
     Se houver dois laços paralelos em sequência, use uma única região parallel e dois for internos  
 */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <omp.h>
